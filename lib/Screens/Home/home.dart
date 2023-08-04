@@ -1,3 +1,4 @@
+import 'package:expense_tracker/Screens/AddIncome.dart';
 import 'package:expense_tracker/Screens/Expensecard/Expensecard.dart';
 import 'package:expense_tracker/consts.dart';
 import 'package:flutter/material.dart';
@@ -45,9 +46,10 @@ class _HomeState extends State<Home> {
       // Handle the selected option here
       //print('Selected Option: $selectedOption');
       if (selectedOption == 'Add Income') {
-        Navigator.pushNamed(context, '/income');
+       
+       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>AddIncome()));
       } else {
-        Navigator.pushNamed(context, '/expense');
+        Navigator.pushReplacementNamed(context, '/expense');
       }
     }
   }
@@ -58,6 +60,8 @@ class _HomeState extends State<Home> {
     return Scaffold(
       //backgroundColor:secondary,
       appBar: AppBar(
+        
+      
         backgroundColor: Colors.white,
         elevation: 0,
         toolbarHeight: 100,
@@ -87,13 +91,14 @@ class _HomeState extends State<Home> {
           ],
         ),
         leading: Padding(
-          padding: const EdgeInsets.only(left:10.0),
+          padding: const EdgeInsets.only(left: 10.0),
           child: CircleAvatar(
             radius: 30.0,
             backgroundColor: Colors.grey.shade300,
             child: Icon(
               Icons.person_2_rounded,
-              size: 30,color: Colors.black,
+              size: 30,
+              color: Colors.black,
             ),
           ),
         ),
@@ -114,12 +119,68 @@ class _HomeState extends State<Home> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          ExpenseCard(w: w)
-        ],
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            ExpenseCard(w: w),
+            // sh10,
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  Container(
+                      margin: EdgeInsets.only(
+                        left: 10,
+                      ),
+                      child: OutlinedButton(
+                          onPressed: () {},
+                          child: Text(
+                            'All Transcations',
+                            style: TextStyle(
+                                color: Colors.blueAccent.shade700, fontSize: 15),
+                          ))),
+                  Container(
+                      margin: EdgeInsets.only(
+                        left: 10,
+                      ),
+                      child: OutlinedButton(
+                          onPressed: () {},
+                          child: Text(
+                            'All Income',
+                            style: TextStyle(
+                                color: Colors.blueAccent.shade700, fontSize: 15),
+                          ))),
+                  Container(
+                      margin: EdgeInsets.only(
+                        left: 10,
+                      ),
+          //             decoration: BoxDecoration( borderRadius: BorderRadius.circular(50),
+          // gradient: LinearGradient(
+          //     colors: [Colors.greenAccent, Colors.blueAccent])),
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(side: BorderSide.none,),
+                          onPressed: () {},
+                          child: Text(
+                            'All Expenses',
+                            style: TextStyle(
+                                color: Colors.blueAccent.shade700, fontSize: 15),
+                          )))
+                ],
+              ),
+            )
+            //  Expanded(
+            //    child: Container(
+            //     height: 60,
+            //     width: double.infinity,
+            //     color: Colors.amber,
+            //     child: Text('hgg',style: TextStyle(color: Colors.black),),
+      
+            //    ),
+            //  )
+          ],
+        ),
       ),
     );
   }
 }
-

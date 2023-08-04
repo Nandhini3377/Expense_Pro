@@ -1,10 +1,10 @@
-enum Category{Project,Food,Travel,Developer_Cost,Other_Charges}
+enum Categories{Project,Food,Travel,Developer_Cost,Other_Charges}
 
 
 class Expense{
   final String title;
   final String description;
-  final Category category;
+  final Categories category;
   final DateTime date;
   final int income;
   final int expense;

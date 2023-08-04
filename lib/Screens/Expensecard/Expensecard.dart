@@ -17,7 +17,8 @@ class ExpenseCard extends StatelessWidget {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.blueAccent])),
+              colors: [Colors.greenAccent, Colors.blueAccent])
+              ),
       child: Column(
         children: [
           sh20,
