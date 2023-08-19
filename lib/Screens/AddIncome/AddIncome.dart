@@ -1,18 +1,60 @@
-import 'package:flutter/foundation.dart';
+import 'package:expense_tracker/Models/IncomeList.dart';
+import 'package:expense_tracker/Provider/IncomeProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:expense_tracker/models/expense.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 final _formatter=DateFormat.yMd();
-class AddExpense extends StatefulWidget {
-  const AddExpense({super.key});
+class AddIncome extends StatefulWidget {
+  const AddIncome({super.key});
 
   @override
-  State<AddExpense> createState() => _IncomeState();
+  State<AddIncome> createState() => _IncomeState();
 }
 
-class _IncomeState extends State<AddExpense> {
+class _IncomeState extends State<AddIncome> {
+ TextEditingController _ititle = TextEditingController();
+ TextEditingController _idescription = TextEditingController();
+ TextEditingController _iamount = TextEditingController();
+
+
+
+ Future<void> onSave() async {
+    if (_ititle.text.isEmpty ||
+        _idescription.text.isEmpty ||
+        _iamount.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Invalid input'),
+          content: const Text(
+              'Please make sure a valid title, amount, date and category was entered.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+              },
+              child: const Text('Okay'),
+            ),
+          ],
+        ),
+      );
+      return;
+    } else {
+      final pro = Provider.of<IncomeProvider>(context, listen: false);
+      pro.addIncome(IncomeList(      
+       
+          title: _ititle.text,
+          description: _idescription.text,
+          category: _selected,
+          date: selectedDate!, iamount: double.parse(_iamount.text)));
+      //await pro.saveToSharedPref();
+    }
+    Navigator.pushNamed(context, '/home');
+  }
+
   DateTime? selectedDate;
-  Categories _selected=Categories.Project;
+  Categoriess _selected=Categoriess.Project;
   void _datePicker() async {
     final now = DateTime.now();
     final firstDate = DateTime(now.year - 1, now.month, now.day);
@@ -58,7 +100,7 @@ class _IncomeState extends State<AddExpense> {
                 padding: const EdgeInsets.only(top: 50.0),
                 child: Center(
                     child: Text(
-                  'ADD EXPENSE',
+                  'ADD INCOME',
                   style: TextStyle(fontSize: 30),
                 )),
               ),
@@ -69,6 +111,7 @@ class _IncomeState extends State<AddExpense> {
                   Padding(
                     padding: const EdgeInsets.only(left: 18, top: 20, right: 18),
                     child: TextField(
+                      controller: _ititle,
                       maxLines: 1,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
@@ -82,9 +125,11 @@ class _IncomeState extends State<AddExpense> {
                   Padding(
                     padding: const EdgeInsets.only(left: 18, top: 20, right: 18),
                     child: TextField(
+                      controller: _idescription,
                       maxLines: 1,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
+
                           prefixIcon: Icon(Icons.assignment_outlined),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(60)),
@@ -95,6 +140,7 @@ class _IncomeState extends State<AddExpense> {
                   Padding(
                     padding: const EdgeInsets.only(left: 18, top: 20, right: 18),
                     child: TextField(
+                      controller: _iamount,
                       maxLines: 1,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
@@ -117,7 +163,7 @@ class _IncomeState extends State<AddExpense> {
                         borderRadius: BorderRadius.circular(30)
                       ),
                        child: OutlinedButton(
-                                   onPressed: (){
+                                   onPressed: (){onSave();
                                  
                                  }, child: Text('Save',style: TextStyle(color: Colors.white,fontSize: 20),),
                                  style: OutlinedButton.styleFrom(
@@ -178,7 +224,7 @@ class _IncomeState extends State<AddExpense> {
                      iconEnabledColor: Colors.black,
                       borderRadius: BorderRadius.circular(8),
                                      value: _selected,
-                      items: Categories.values.map((category) => DropdownMenuItem(
+                      items: Categoriess.values.map((category) => DropdownMenuItem(
                         value: category,
                         child: Text(category.name.toUpperCase()),
                       )
