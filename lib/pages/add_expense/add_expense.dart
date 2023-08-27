@@ -1,9 +1,9 @@
-import 'package:expense_tracker/Provider/ExpenseProvider.dart';
-import 'package:expense_tracker/Screens/AddExpense/SaveButton.dart';
+import 'package:expense_tracker/provider/expense_provider.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:expense_tracker/Models/ExpenseList.dart';
+import 'package:expense_tracker/models/expense_list.dart';
 import 'package:provider/provider.dart';
 
 final _formatter = DateFormat.yMd();
@@ -50,16 +50,22 @@ class _IncomeState extends State<AddExpense> {
       );
       return;
     } else {
-      final pro = Provider.of<ExpenseProvider>(context, listen: false);
+     // final pro = Provider.of<ExpenseProvider>(context, listen: false);
 
-      pro.addExpense(ExpenseList(
+      await ExpenseProvider.addExpense(ExpenseList(
        amount: double.parse(_amount.text),
           title: _title.text,
           description: _description.text,
           category: _selected,
           date: selectedDate!));
+          ExpenseProvider().calculateTotalExpenses();
+         await   ExpenseProvider().storeTotalExpenses();
          // pro.saveToHive();
       //await pro.saveToSharedPref();
+      _amount.clear();
+      _description.clear();
+      _title.clear();
+    
     }
     
     Navigator.pushNamed(context, '/home');

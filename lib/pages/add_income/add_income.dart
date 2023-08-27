@@ -1,5 +1,5 @@
-import 'package:expense_tracker/Models/IncomeList.dart';
-import 'package:expense_tracker/Provider/IncomeProvider.dart';
+import 'package:expense_tracker/models/income_list.dart';
+import 'package:expense_tracker/provider/income_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -41,14 +41,20 @@ class _IncomeState extends State<AddIncome> {
       );
       return;
     } else {
-      final pro = Provider.of<IncomeProvider>(context, listen: false);
-      pro.addIncome(IncomeList(      
+      // final pro = Provider.of<IncomeProvider>(context, listen: false);
+      IncomeProvider.addIncome(IncomeList(      
        
           title: _ititle.text,
           description: _idescription.text,
           category: _selected,
           date: selectedDate!, iamount: double.parse(_iamount.text)));
       //await pro.saveToSharedPref();
+       IncomeProvider().calculateTotalIncome();
+         await  IncomeProvider().storeTotalIncomes();
+       _iamount.clear();
+      _idescription.clear();
+      _ititle.clear();
+    
     }
     Navigator.pushNamed(context, '/home');
   }

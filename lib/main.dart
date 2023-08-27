@@ -1,14 +1,16 @@
-import 'package:expense_tracker/Provider/ExpenseProvider.dart';
-import 'package:expense_tracker/Provider/IncomeProvider.dart';
-import 'package:expense_tracker/Screens/AddExpense/AddExpense.dart';
-import 'package:expense_tracker/Screens/AddIncome/AddIncome.dart';
-import 'package:expense_tracker/Screens/Home/home.dart';
-import 'package:expense_tracker/Screens/Splash/splashscreen.dart';
+import 'package:expense_tracker/provider/expense_provider.dart';
+import 'package:expense_tracker/provider/income_provider.dart';
+import 'package:expense_tracker/pages/add_expense/add_expense.dart';
+import 'package:expense_tracker/pages/add_income/add_income.dart';
+import 'package:expense_tracker/pages/home/home.dart';
+import 'package:expense_tracker/pages/splash/splashscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ExpenseProvider.initHive();
+  await IncomeProvider.initHive();
   runApp(const MyApp());
 }
 

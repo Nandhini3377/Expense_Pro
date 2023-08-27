@@ -1,14 +1,14 @@
 import 'dart:convert';
-
-import 'package:expense_tracker/Models/IncomeList.dart';
-import 'package:expense_tracker/Provider/ExpenseProvider.dart';
-import 'package:expense_tracker/Provider/IncomeProvider.dart';
-import 'package:expense_tracker/Screens/AddIncome/AddIncome.dart';
-import 'package:expense_tracker/Screens/Expensecard/Expensecard.dart';
+import 'package:expense_tracker/models/income_list.dart';
+import 'package:expense_tracker/provider/expense_provider.dart';
+import 'package:expense_tracker/provider/income_provider.dart';
+import 'package:expense_tracker/pages/add_income/add_income.dart';
+import 'package:expense_tracker/pages/expense_card/expense_card.dart';
 import 'package:expense_tracker/consts.dart';
-import 'package:expense_tracker/Models/ExpenseList.dart';
+import 'package:expense_tracker/models/expense_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -133,7 +133,11 @@ class _HomeState extends State<Home> {
             ),
           )
         ],
+      
       ),
+    
+      
+      
       body: Column(
         children: [
           ExpenseCard(w: w),
@@ -160,7 +164,7 @@ class _HomeState extends State<Home> {
   }
 }
 
-class BothView extends StatelessWidget {
+class BothView extends StatefulWidget {
   const BothView({
     super.key,
     required this.expenseProvider,
@@ -171,23 +175,43 @@ class BothView extends StatelessWidget {
   final IncomeProvider incomeProvider;
 
   @override
+  State<BothView> createState() => _BothViewState();
+}
+
+class _BothViewState extends State<BothView> {
+ late Box<ExpenseList> boxe;
+ late Box<IncomeList> boxi;
+ @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    boxe=ExpenseProvider.getMyExpense();
+    boxi=IncomeProvider.getMyIncome();
+  }
+  @override
   Widget build(BuildContext context) {
+    final List<ExpenseList> exp=boxe.values.toList();
+    final List<IncomeList> inc=boxi.values.toList();
     return Expanded(
       child: Container(
         //height: 90,
         margin: EdgeInsets.all(20),
         child: ListView.builder(
-          itemCount:
-              expenseProvider.expenses.length + incomeProvider.income.length,
+          itemCount: boxe.length+boxi.length,
+         // itemCount:
+         //
+         //     widget.expenseProvider.expenses.length + widget.incomeProvider.income.length,
           itemBuilder: (context, index) {
-            if (index < expenseProvider.expenses.length) {
+            if (index < boxe.length) {
               // Expense list item
-              ExpenseList expenseItem = expenseProvider.expenses[index];
+              ExpenseList expenseItem = exp[index];
               return Dismissible(
                 key: UniqueKey(),
                 direction: DismissDirection.endToStart,
-                onDismissed: (_) {
-                  expenseProvider.removeExpense(index);
+                onDismissed: (_)async {
+                  ExpenseProvider.removeExpense(index);
+                  ExpenseProvider().calculateTotalExpenses();
+                  await  ExpenseProvider().storeTotalExpenses();
                 },
                 background: Container(
                   //color: Colors.red.shade400,
@@ -251,14 +275,16 @@ class BothView extends StatelessWidget {
               );
             } else {
               // Income list item
-              IncomeList incomeItem = incomeProvider
-                  .income[index - expenseProvider.expenses.length];
+             
+              IncomeList incomeItem = inc[index-exp.length];
               return Dismissible(
                 key: UniqueKey(), // Use a unique identifier for each item
                 direction: DismissDirection.endToStart,
-                onDismissed: (direction) {
+                onDismissed: (direction)async {
                   // Call the deleteExpense method to remove the item from the list
-                  incomeProvider.removeExpense(index);
+                 IncomeProvider.removeIncome(index);
+                  IncomeProvider().calculateTotalIncome();
+                  await  IncomeProvider().storeTotalIncomes();
                 },
                 background: Container(
                   //color: Colors.red.shade400,
@@ -339,76 +365,83 @@ class IncomeView extends StatelessWidget {
     return Expanded(
       child: Container(
         margin: EdgeInsets.all(20),
-        child: ListView.builder(
-          itemCount: incomeProvider.income.length,
-          itemBuilder: ((context, index) {
-            IncomeList incomeItem = incomeProvider.income[index];
-            return Dismissible(
-              key: UniqueKey(), // Use a unique identifier for each item
-              direction: DismissDirection.endToStart,
-              onDismissed: (direction) {
-                // Call the deleteExpense method to remove the item from the list
-                incomeProvider.removeExpense(index);
-              },
-              background: Container(
-                //color: Colors.red.shade400,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                margin: const EdgeInsets.all(10),
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: const Icon(
-                    Icons.delete,
-                    size: 30,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              child: Container(
-                margin: EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                    //border: Border.all(),
+        child: ValueListenableBuilder(
+          valueListenable: IncomeProvider.getMyIncome().listenable(),
+          builder: (context,Box<IncomeList> box,_){
+            final List<IncomeList> incomeItem=box.values.toList();
+        return ListView.builder(
+            itemCount: incomeItem.length,
+            itemBuilder: ((context, index) {
+              IncomeList incomeItem = box.getAt(index)!;
+              return Dismissible(
+                key: UniqueKey(), // Use a unique identifier for each item
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) async {
+                  // Call the deleteExpense method to remove the item from the list
+                  IncomeProvider.removeIncome(index);
+                   IncomeProvider().calculateTotalIncome();
+                  await  IncomeProvider().storeTotalIncomes();
+                },
+                background: Container(
+                  //color: Colors.red.shade400,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
                     borderRadius: BorderRadius.circular(10),
-                    gradient:
-                        LinearGradient(colors: [Colors.blue, Colors.green])),
-                child: Card(
-                  elevation: 1.0,
-                  //color: Colors.white,
-                  // ExpenseList expenseItem = snapshot.data[index],
-                  child: ListTile(
-                    title: Text(
-                      incomeItem.title.toUpperCase(),
-                      style: GoogleFonts.abhayaLibre(fontSize: 22),
+                  ),
+                  margin: const EdgeInsets.all(10),
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: const Icon(
+                      Icons.delete,
+                      size: 30,
+                      color: Colors.white,
                     ),
-                    subtitle: Text(
-                      incomeItem.category.name,
-                    ),
-                    leading: categoryIconss[incomeItem.category],
-                    trailing: Column(children: [
-                      sh10,
-                      Text(
-                        '+ ₹ ${incomeItem.iamount}',
-                        style: TextStyle(
-                            fontSize: 18, color: Colors.green.shade900),
-                      ),
-                      sh10,
-                      Text(
-                        incomeItem.date.day.toString() +
-                            "/" +
-                            incomeItem.date.month.toString() +
-                            "/" +
-                            incomeItem.date.year.toString(),
-                        style: TextStyle(fontSize: 14),
-                      ),
-                    ]),
                   ),
                 ),
-              ),
-            );
-          }),
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                      //border: Border.all(),
+                      borderRadius: BorderRadius.circular(10),
+                      gradient:
+                          LinearGradient(colors: [Colors.blue, Colors.green])),
+                  child: Card(
+                    elevation: 1.0,
+                    //color: Colors.white,
+                    // ExpenseList expenseItem = snapshot.data[index],
+                    child: ListTile(
+                      title: Text(
+                        incomeItem.title.toUpperCase(),
+                        style: GoogleFonts.abhayaLibre(fontSize: 22),
+                      ),
+                      subtitle: Text(
+                        incomeItem.category.name,
+                      ),
+                      leading: categoryIconss[incomeItem.category],
+                      trailing: Column(children: [
+                        sh10,
+                        Text(
+                          '+ ₹ ${incomeItem.iamount}',
+                          style: TextStyle(
+                              fontSize: 18, color: Colors.green.shade900),
+                        ),
+                        sh10,
+                        Text(
+                          incomeItem.date.day.toString() +
+                              "/" +
+                              incomeItem.date.month.toString() +
+                              "/" +
+                              incomeItem.date.year.toString(),
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ]),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          );}
         ),
       ),
     );
@@ -428,75 +461,85 @@ class ExpenseView extends StatelessWidget {
     return Expanded(
       child: Container(
         margin: EdgeInsets.all(20),
-        child: ListView.builder(
-          itemCount: expenseProvider.expenses.length,
-          itemBuilder: ((context, index) {
-            ExpenseList expenseItem = expenseProvider.expenses[index];
-            return Dismissible(
-              key: UniqueKey(),
-              direction: DismissDirection.endToStart,
-              onDismissed: (_) {
-                expenseProvider.removeExpense(index);
-              },
-              background: Container(
-                //color: Colors.red.shade400,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                margin: const EdgeInsets.all(10),
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: const Icon(
-                    Icons.delete,
-                    size: 30,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              child: Container(
-                margin: EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                    //border: Border.all(),
+        child: ValueListenableBuilder(
+          valueListenable: ExpenseProvider.getMyExpense().listenable(),
+          builder: (context,Box<ExpenseList> box,_){
+            final List<ExpenseList> expenseItem = box.values.toList();
+        return ListView.builder(
+          itemCount: expenseItem.length,
+            //itemCount: expenseProvider.expenses.length,
+            itemBuilder: ((context, index) {
+             // ExpenseList expenseItem = expenseProvider.expenses[index];
+             
+             ExpenseList expenseItem = box.getAt(index)!;
+              return Dismissible(
+                key: UniqueKey(),
+                direction: DismissDirection.endToStart,
+                onDismissed: (_) async{
+                  ExpenseProvider.removeExpense(index);
+                  ExpenseProvider().calculateTotalExpenses();
+                  await  ExpenseProvider().storeTotalExpenses();
+                },
+                background: Container(
+                  //color: Colors.red.shade400,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
                     borderRadius: BorderRadius.circular(10),
-                    gradient:
-                        LinearGradient(colors: [Colors.blue, Colors.green])),
-                child: Card(
-                  elevation: 1.0,
-                  //color: Colors.white,
-                  // ExpenseList expenseItem = snapshot.data[index],
-                  child: ListTile(
-                    title: Text(
-                      expenseItem.title.toUpperCase(),
-                      style: GoogleFonts.abhayaLibre(fontSize: 22),
+                  ),
+                  margin: const EdgeInsets.all(10),
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: const Icon(
+                      Icons.delete,
+                      size: 30,
+                      color: Colors.white,
                     ),
-                    subtitle: Text(
-                      expenseItem.category.name,
-                    ),
-                    leading: categoryIcons[expenseItem.category],
-                    trailing: Column(children: [
-                      sh10,
-                      Text(
-                        '- ₹ ${expenseItem.amount}',
-                        style:
-                            TextStyle(fontSize: 18, color: Colors.red.shade900),
-                      ),
-                      sh10,
-                      Text(
-                        expenseItem.date.day.toString() +
-                            "/" +
-                            expenseItem.date.month.toString() +
-                            "/" +
-                            expenseItem.date.year.toString(),
-                        style: TextStyle(fontSize: 14),
-                      ),
-                    ]),
                   ),
                 ),
-              ),
-            );
-          }),
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                      //border: Border.all(),
+                      borderRadius: BorderRadius.circular(10),
+                      gradient:
+                          LinearGradient(colors: [Colors.blue, Colors.green])),
+                  child: Card(
+                    elevation: 1.0,
+                    //color: Colors.white,
+                    // ExpenseList expenseItem = snapshot.data[index],
+                    child: ListTile(
+                      title: Text(
+                        expenseItem.title.toUpperCase(),
+                        style: GoogleFonts.abhayaLibre(fontSize: 22),
+                      ),
+                      subtitle: Text(
+                        expenseItem.category.name,
+                      ),
+                      leading: categoryIcons[expenseItem.category],
+                      trailing: Column(children: [
+                        sh10,
+                        Text(
+                          '- ₹ ${expenseItem.amount}',
+                          style:
+                              TextStyle(fontSize: 18, color: Colors.red.shade900),
+                        ), 
+                        Spacer(),
+                        Text(
+                          expenseItem.date.day.toString() +
+                              "/" +
+                              expenseItem.date.month.toString() +
+                              "/" +
+                              expenseItem.date.year.toString(),
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ]),
+                    ),
+                  ),
+                ),
+              );
+            }),
+        );}
         ),
       ),
     );
