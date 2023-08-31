@@ -10,7 +10,7 @@ class IncomeProvider extends ChangeNotifier {
 
 static Future<void> initHive() async {
     await Hive.initFlutter();
- await Hive.openBox<double>('totalIncomes');
+   await Hive.openBox<double>('totalIncomes');
     Hive.registerAdapter(IncomeListAdapter());
     await Hive.openBox<IncomeList>('MyIncome');
   }
@@ -19,9 +19,9 @@ static Future<void> initHive() async {
     return Hive.box('MyIncome');
   }
 
-  static Future<void> addIncome(IncomeList expense) async {
+  static Future<void> addIncome(IncomeList income) async {
     final exp = getMyIncome();
-    await exp.add(expense);
+    await exp.add(income);
     
   }
 static Future<void> removeIncome(int index) async {

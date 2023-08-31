@@ -30,7 +30,7 @@ class _IncomeState extends State<AddExpense> {
 
   Future<void> _onSave() async {
     if (_title.text.isEmpty ||
-        _description.text.isEmpty ||
+       
         _amount.text.isEmpty) {
       showDialog(
         context: context,
@@ -101,109 +101,108 @@ class _IncomeState extends State<AddExpense> {
                 color: Colors.grey.shade700,
               ))
         ],
-        backgroundColor: Colors.cyan,
+        backgroundColor: Colors.grey.shade300,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Container(
-          width: double.infinity,
-          height: 665,
-          color: Colors.cyan,
-          child: Column(
-            //mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 50.0),
-                child: Center(
-                    child: Text(
-                  'ADD EXPENSE',
-                  style: TextStyle(fontSize: 30),
-                )),
-              ),
-              Form(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 18, top: 20, right: 18),
-                    child: TextField(
-                      controller: _title,
-                      maxLines: 1,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.assignment_outlined),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(60)),
-                          hintText: 'Enter Title',
-                          hintStyle: TextStyle(fontSize: 20)),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 18, top: 20, right: 18),
-                    child: TextField(
-                      controller: _description,
-                      maxLines: 1,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.assignment_outlined),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(60)),
-                          hintText: 'Enter Description',
-                          hintStyle: TextStyle(fontSize: 20)),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 18, top: 20, right: 18),
-                    child: TextField(
-                      controller: _amount,
-                      maxLines: 1,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        prefixText: '₹',
-                        labelText: 'Enter Amount',
-                        prefixStyle: TextStyle(fontSize: 20),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.grey.shade300,
+        child: Column(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 40.0),
+              child: Center(
+                  child: Text(
+                'ADD EXPENSE',
+                style: TextStyle(fontSize: 30),
+              )),
+            ),
+            Form(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 18, top: 30, right: 18),
+                  child: TextField(
+                    controller: _title,
+                    maxLines: 1,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.assignment_outlined,color: Colors.black,),
+                       focusedBorder: OutlineInputBorder(
+       borderRadius: BorderRadius.circular(50,),
+borderSide: BorderSide(width: 3.0,color: Colors.cyan)      
+      ),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(60)),
-                      ),
+                          borderSide: BorderSide(color: Colors.black),
+                            borderRadius: BorderRadius.circular(60),),
+                            enabledBorder: OutlineInputBorder( borderRadius: BorderRadius.circular(50,),
+borderSide: BorderSide(color: Colors.black) ),
+                        hintText: 'Enter Title',
+                        hintStyle: TextStyle(fontSize: 20)
+                        ),
+                  ),
+                ),
+               
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 18, top: 20, right: 18),
+                  child: TextField(
+                    controller: _amount,
+                    maxLines: 1,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder( borderRadius: BorderRadius.circular(50,),
+borderSide: BorderSide(color: Colors.black) ),
+                      focusedBorder: OutlineInputBorder(
+       borderRadius: BorderRadius.circular(50,),
+borderSide: BorderSide(width: 3.0,color: Colors.cyan)      
+      ),
+                      prefixIcon:  Icon(Icons.money_outlined,color: Colors.black,),
+                    //  prefixText: '₹ ',
+                    hintText: 'Enter Amount',
+                      hintStyle: TextStyle(fontSize: 20),
+                      prefixStyle: TextStyle(fontSize: 20),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(60)),
                     ),
                   ),
-                  ThirdRow(),
-                  //SaveButton(onSave: onSave),
+                ),
+                ThirdRow(),
+                //SaveButton(onSave: onSave),
 
-                  Padding(
-                    padding: const EdgeInsets.only(top: 50.0, left: 80),
-                    child: Container(
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [
-                              Colors.greenAccent.shade700,
-                              Colors.blueAccent
-                            ]),
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(30)),
-                        child: OutlinedButton(
-                            onPressed: () async {
-                              await _onSave();
-                              Navigator.pushNamed(context, '/home');
-                            },
-                            child: Text(
-                              'Save',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                                fixedSize: Size(200, 50),
+                Padding(
+                  padding: const EdgeInsets.only(top: 40.0, left: 80),
+                  child: Container(
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: [
+                            Colors.greenAccent.shade700,
+                            Colors.blueAccent
+                          ]),
+                          border: Border.all(color: Colors.black),
+                          borderRadius: BorderRadius.circular(30)),
+                      child: OutlinedButton(
+                          onPressed: () async {
+                            await _onSave();
+                            Navigator.pushNamed(context, '/home');
+                          },
+                          child: Text(
+                            'Save',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                              fixedSize: Size(200, 50),
 
-                                //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                                side: BorderSide.none))),
-                  )
-                ],
-              ))
-            ],
-          ),
+                              //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                              side: BorderSide.none))),
+                )
+              ],
+            ))
+          ],
         ),
       ),
     );
@@ -213,7 +212,7 @@ class _IncomeState extends State<AddExpense> {
     return Row(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 30.0, top: 20),
+          padding: const EdgeInsets.only(left: 26.0, top: 20),
           child: TextButton.icon(
               style: TextButton.styleFrom(
                 padding:
@@ -226,7 +225,7 @@ class _IncomeState extends State<AddExpense> {
               onPressed: () {
                 _datePicker();
               },
-              icon: Icon(Icons.calendar_month),
+              icon: Icon(Icons.calendar_month,color: Colors.black,),
               label: Text(
                 selectedDate == null
                     ? 'Select Date'
